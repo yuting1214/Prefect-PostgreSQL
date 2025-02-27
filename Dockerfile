@@ -11,9 +11,8 @@ ENV PATH="/root/.local/bin:$PATH"
 # Copy only the requirements file first to leverage Docker cache
 COPY requirements.txt .
 
-# Install dependencies
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip install -r requirements.txt
+# Install dependencies without using cache mount
+RUN uv pip install -r requirements.txt
 
 # Copy the rest of the application code
 COPY server.py .
