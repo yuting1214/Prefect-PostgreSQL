@@ -1,5 +1,5 @@
 # Use the official Python image with uv pre-installed
-FROM ghcr.io/astral-sh/uv:python3.9-bookworm-slim
+FROM ghcr.io/astral-sh/uv:0.6.3-python3.9-bookworm
 
 # Set the working directory
 WORKDIR /app
@@ -12,7 +12,7 @@ ENV PATH="/root/.local/bin:$PATH"
 COPY requirements.txt .
 
 # Install dependencies
-RUN --mount=type=cache,target=/root/.cache/uv \
+RUN --mount=type=cache,id=uv-cache,target=/root/.cache/uv \
     uv pip install -r requirements.txt
 
 # Copy the rest of the application code
