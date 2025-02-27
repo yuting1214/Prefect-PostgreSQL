@@ -14,8 +14,10 @@ COPY requirements.txt .
 # Install dependencies without using cache mount
 RUN uv pip install -r requirements.txt
 
-# Copy the entire project directory
-COPY . .
+# Set environment variables for the database
+# These can be overridden at runtime
+ENV PREFECT_API_DATABASE_CONNECTION_URL="postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
+ENV PREFECT_API_URL="http://0.0.0.0:4200/api"
 
-# Set the entrypoint
-ENTRYPOINT ["python", "server.py"]
+# Start the Prefect server
+CMD ["prefect", "server", "start", "--host", "0.0.0.0"]
