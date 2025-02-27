@@ -14,8 +14,8 @@ COPY requirements.txt .
 # Install dependencies without using cache mount
 RUN uv pip install -r requirements.txt
 
-# Copy the rest of the application code
-COPY server.py .
+# Copy the entire project directory
+COPY . .
 
 # Set the entrypoint
 ENTRYPOINT ["python", "server.py"]
