@@ -1,4 +1,7 @@
+from prefect import flow
 from demo_workflow import show_stars
+
+# flow.from_source()
 
 if __name__ == "__main__":
     show_stars.deploy(
