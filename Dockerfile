@@ -18,4 +18,4 @@ RUN uv pip install -r requirements.txt
 COPY . .
 
 # Start the Prefect server
-CMD ["prefect", "server", "start", "--host", "0.0.0.0"]
+CMD ["prefect", "worker", "start", "-p", "Test"]
