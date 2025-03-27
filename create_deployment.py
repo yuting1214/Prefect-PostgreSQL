@@ -7,7 +7,7 @@ if __name__ == "__main__":
     flow.from_source(
         source=GitRepository(
             url=SOURCE_REPO,
-            branch="dynamic-process-work-pool",
+            branch="main",
             pull_interval=None
         ),
         entrypoint="demo_workflow.py:show_stars",
