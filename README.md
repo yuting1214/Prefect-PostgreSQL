@@ -11,8 +11,14 @@ The template deploys two services:
 
 | Service | Image | Notes |
 |---|---|---|
-| Prefect server | `prefecthq/prefect:3-latest` | public domain, port `4200` |
-| Postgres | `ghcr.io/railwayapp-templates/postgres-ssl` | persistent volume |
+| Prefect server | `prefecthq/prefect:3.8-python3.12` | public domain, port `4200`, password-protected |
+| Postgres | `ghcr.io/railwayapp-templates/postgres-ssl:18` | persistent volume |
+
+**Pinned to the Prefect 3.8 line** — currently **3.8.2** (released 2026-08-07), not a
+moving `3-latest`. A deploy today and a deploy next month give you the same Prefect
+minor: the same API, the same UI and the same database schema. Patch releases still
+arrive automatically; only minor jumps are gated. Check what a running server is on
+with `GET /api/admin/version`.
 
 ## After you deploy
 
@@ -30,10 +36,11 @@ prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
 prefect cloud login
 ```
 
-> **Secure it.** The Prefect server is deployed without authentication, so anyone
-> with the URL can read and control it. Set `PREFECT_SERVER_API_AUTH_STRING` on the
-> server service (and the matching `PREFECT_API_AUTH_STRING` on any client) if the
-> domain is reachable from the internet. See
+> **Credentials.** The server is password-protected by default with a unique random
+> password generated at deploy time. Find it in the Railway dashboard on the
+> `prefect-server` service under **Variables** → `PREFECT_SERVER_API_AUTH_STRING`,
+> in the form `admin:PASSWORD`. Clients and workers need the same value:
+> `prefect config set PREFECT_API_AUTH_STRING="admin:YOUR-PASSWORD"`. See
 > [Prefect's security settings](https://docs.prefect.io/v3/advanced/security-settings).
 
 ## Running flows
