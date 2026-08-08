@@ -1,0 +1,28 @@
+# Declare your deployments here. This is Prefect's own format, documented at
+# https://docs.prefect.io/v3/deploy — nothing in it is specific to this template.
+#
+# The worker runs `prefect deploy --all` against this file every time it starts, so
+# pushing a change and letting Railway redeploy is all it takes to register a flow.
+name: prefect-railway-worker
+prefect-version: 3.8.2
+
+# No image build and no upload: the flow code is already inside the worker image.
+build: null
+push: null
+
+# The worker executes runs from its own filesystem, where this repo lives at /app.
+pull:
+  - prefect.deployments.steps.set_working_directory:
+      directory: /app
+
+deployments:
+  - name: example-github-stars
+    entrypoint: flows/example_stars.py:github_stars
+    description: Example deployment — delete once you have your own flows.
+    parameters:
+      repos:
+        - PrefectHQ/prefect
+    schedules:
+      - cron: "0 6 * * *"
+        timezone: UTC
+        active: true

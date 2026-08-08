@@ -1,4 +1,0 @@
-# Pinned to the same minor the server template ships (prefecthq/prefect:3.8-python3.12).
-# Worker and server must stay protocol-compatible — bump both together.
-prefect==3.8.2
-httpx
