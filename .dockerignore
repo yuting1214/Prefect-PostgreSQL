@@ -1,0 +1,7 @@
+docs/
+.claude/
+assets/
+.git/
+.venv/
+__pycache__/
+*.pyc

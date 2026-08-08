@@ -1,26 +1,26 @@
-# Use the official Python image with uv pre-installed
-FROM ghcr.io/astral-sh/uv:python3.9-bookworm-slim
+# Prefect worker — the execution half of the work-pool template.
+#
+# The server schedules; this container is what actually runs your flows. It polls a
+# process work pool and executes each flow run as a subprocess, so anything your
+# flows import must be installed here — fork this repo and add it to requirements.txt.
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
-# Install git and other necessary system dependencies
+# git is REQUIRED at runtime, not just build time: flow.from_source(...) clones the
+# deployer's repository when a run starts.
 RUN apt-get update && \
-    apt-get install -y git && \
+    apt-get install -y --no-install-recommends git ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Set the working directory
 WORKDIR /app
 
-# Set environment variables
-ENV UV_SYSTEM_PYTHON=1
-ENV PATH="/root/.local/bin:$PATH"
+ENV UV_SYSTEM_PYTHON=1 \
+    PYTHONUNBUFFERED=1 \
+    PREFECT_WORK_POOL=Process
 
-# Copy only the requirements file first to leverage Docker cache
 COPY requirements.txt .
-
-# Install dependencies without using cache mount
 RUN uv pip install -r requirements.txt
 
-# Copy the rest of the application code
 COPY . .
 
-# Start the Prefect worker
-CMD ["prefect", "worker", "start", "-p", "Process"]
+RUN chmod +x /app/worker-entrypoint.sh
+ENTRYPOINT ["/app/worker-entrypoint.sh"]
