@@ -58,7 +58,16 @@ prefect cloud login
 A Prefect server schedules work but does not execute it — that's a **worker's** job.
 This repo contains one:
 
-Fork this repo, then you only ever touch two things:
+**If you deployed the template, eject the worker first.** A deployed template attaches
+directly to *this* repository, which you cannot push to. In Railway: **worker**
+service → **Settings** → **Source** → **Upstream Repo** → **Eject** → pick your
+GitHub org → **Eject service**. Railway mirrors this repo into your account and
+repoints the service at it — and afterwards opens a pull request in your copy
+whenever this template improves.
+
+(Deploying from scratch instead? Just fork this repo.)
+
+Then you only ever touch two things:
 
 | | |
 |---|---|
