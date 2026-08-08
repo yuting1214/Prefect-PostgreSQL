@@ -5,20 +5,30 @@
 Self-hosted **[Prefect 3](https://github.com/PrefectHQ/prefect)** on Railway — the
 Prefect server (API + UI) with a PostgreSQL database behind it, in one click.
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/z8tmK-?referralCode=jk_FgY&utm_medium=integration&utm_source=template&utm_campaign=generic)
+Two templates, same stack, different halves of the job.
 
-The template deploys two services:
-
-| Service | Image | Notes |
+| | **Prefect Server** | **Prefect + Worker** |
 |---|---|---|
-| Prefect server | `prefecthq/prefect:3.8-python3.12` | public domain, port `4200`, password-protected |
-| Postgres | `ghcr.io/railwayapp-templates/postgres-ssl:18` | persistent volume |
+| | [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/z8tmK-?referralCode=jk_FgY&utm_medium=integration&utm_source=template&utm_campaign=generic) | *publishing soon* |
+| Services | server + Postgres | server + Postgres + **worker** |
+| Work pool | you create one | **created on boot** |
+| Runs your flows | ✗ you supply a worker | ✓ out of the box |
+| Scheduled runs fire | while your machine is awake | **always** |
+| Your flows live in | wherever you like | `flows/` in your fork of this repo |
+| Prefect installed locally | required | optional |
 
-**Pinned to the Prefect 3.8 line** — currently **3.8.2** (released 2026-08-07), not a
-moving `3-latest`. A deploy today and a deploy next month give you the same Prefect
-minor: the same API, the same UI and the same database schema. Patch releases still
-arrive automatically; only minor jumps are gated. Check what a running server is on
-with `GET /api/admin/version`.
+**Prefect Server** is the control plane on its own — the API, the UI and a database.
+Use it when you already have somewhere to run a worker, or you only want the
+dashboard.
+
+**Prefect + Worker** adds the execution half. A Prefect server schedules work but
+does not perform it: without a worker, a flow scheduled for 3am simply goes `Late`.
+This template ships a worker that is already running, already authenticated and
+already attached to a pool.
+
+Both pin Prefect to the **3.8** line (`prefecthq/prefect:3.8-python3.12`, currently
+3.8.2) and PostgreSQL to **18**, so a deploy today and a deploy next month give you
+the same Prefect minor while patch releases still arrive automatically.
 
 ## After you deploy
 
