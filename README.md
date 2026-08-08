@@ -58,14 +58,17 @@ prefect cloud login
 A Prefect server schedules work but does not execute it — that's a **worker's** job.
 This repo contains one:
 
-**If you deployed the template, eject the worker first.** A deployed template attaches
+**Deployed via the button? Eject the worker first.** A deployed template attaches
 directly to *this* repository, which you cannot push to. In Railway: **worker**
 service → **Settings** → **Source** → **Upstream Repo** → **Eject** → pick your
-GitHub org → **Eject service**. Railway mirrors this repo into your account and
-repoints the service at it — and afterwards opens a pull request in your copy
-whenever this template improves.
+GitHub org → **Eject service**.
 
-(Deploying from scratch instead? Just fork this repo.)
+You then get your own copy, and everything after that is a file edit on github.com —
+open `flows/example_stars.py`, click the pencil, replace it with your flow, commit.
+Railway rebuilds and re-registers on boot. Railway also opens a pull request in your
+copy whenever this template improves.
+
+(Starting from scratch instead of the button? Just fork this repo.)
 
 Then you only ever touch two things:
 
