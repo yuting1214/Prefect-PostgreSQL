@@ -168,3 +168,16 @@ pip-selfcheck.json
 /tmp
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+
+### Internal template ledger — NEVER commit to this public repo ###
+# docs/ holds the Railway template tracking layer: captured template config and
+# metrics (payout/earnings), competitor research, roadmap and marketplace drafts.
+# It is version-controlled by its own PRIVATE git repo at docs/.git — this repo
+# must not see it. Adding anything to docs/ is automatically private.
+docs/
+
+# OS / editor cruft
+.DS_Store
+*.swp
+.idea/
+.vscode/
