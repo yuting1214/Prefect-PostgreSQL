@@ -1,26 +1,31 @@
-# Use the official Python image with uv pre-installed
-FROM ghcr.io/astral-sh/uv:python3.9-bookworm-slim
+# Prefect worker — the execution half of the work-pool template.
+#
+# The server schedules; this container runs your flows. Each flow run executes as a
+# subprocess here, so every package your flows import must be a dependency in
+# pyproject.toml. Add one with `uv add <package>`, commit pyproject.toml and uv.lock,
+# and push — Railway rebuilds this image.
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
-# Install git and other necessary system dependencies
+# git and certs are needed at RUNTIME, not just build time: Prefect's git_clone pull
+# step fetches code when a deployment is sourced from a repository.
 RUN apt-get update && \
-    apt-get install -y git && \
+    apt-get install -y --no-install-recommends git ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Set the working directory
 WORKDIR /app
 
-# Set environment variables
-ENV UV_SYSTEM_PYTHON=1
-ENV PATH="/root/.local/bin:$PATH"
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    PYTHONUNBUFFERED=1 \
+    PATH="/app/.venv/bin:$PATH" \
+    PREFECT_WORK_POOL=Process
 
-# Copy only the requirements file first to leverage Docker cache
-COPY requirements.txt .
+# Dependencies first, so edits to flows/ don't invalidate the install layer.
+# --frozen: fail if uv.lock is out of date rather than silently resolving something else.
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
 
-# Install dependencies without using cache mount
-RUN uv pip install -r requirements.txt
-
-# Copy the rest of the application code
 COPY . .
+RUN chmod +x worker/entrypoint.sh
 
-# Start the Prefect worker
-CMD ["prefect", "worker", "start", "-p", "Process"]
+ENTRYPOINT ["/app/worker/entrypoint.sh"]

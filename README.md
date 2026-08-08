@@ -48,23 +48,23 @@ prefect cloud login
 A Prefect server schedules work but does not execute it — that's a **worker's** job.
 This repo contains one:
 
-| File | What it is |
-|---|---|
-| `Dockerfile` | worker image — `prefect worker start -p Process` |
-| `requirements.txt` | worker dependencies — **fork and add your flow's libraries here** |
-| `demo_workflow.py` | example flow: counts stars on GitHub repos |
-| `create_deployment.py` | registers that flow against the `Process` work pool, every 60s |
+Fork this repo, then you only ever touch two things:
 
-Create the work pool once, then run a worker against it:
+| | |
+|---|---|
+| **`flows/`** | your flow code, plus `prefect.yaml` declaring which flows to register and on what schedule |
+| **`pyproject.toml`** | your dependencies — `uv add pandas`, commit `pyproject.toml` **and** `uv.lock` |
+
+Everything else is the worker itself: `Dockerfile` builds the image and
+`worker/entrypoint.sh` waits for the server, runs `prefect deploy --all` against
+`flows/prefect.yaml`, and starts polling. Push a change and Railway rebuilds — your
+deployments re-register on boot.
 
 ```bash
-prefect work-pool create --type process Process
-prefect worker start -p Process
-python create_deployment.py
+uv sync                     # local dev environment
+uv run python flows/example_stars.py   # run a flow directly
+uv add pandas               # add a dependency, then commit pyproject.toml + uv.lock
 ```
-
-Deploy the worker on Railway from this repo (or your fork of it) and it will keep
-polling the pool for scheduled runs.
 
 ## Credits
 

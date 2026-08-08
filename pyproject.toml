@@ -1,0 +1,20 @@
+# Worker dependencies for the Prefect work-pool template.
+#
+# Your flows run inside this image, so anything they import must be listed here.
+# Add one with:   uv add pandas
+# then commit BOTH pyproject.toml and uv.lock and push — Railway rebuilds the worker.
+[project]
+name = "prefect-railway-worker"
+version = "0.1.0"
+description = "Prefect worker for the Railway work-pool template"
+requires-python = ">=3.12"
+dependencies = [
+    # Pinned to the same minor the server ships (prefecthq/prefect:3.8-python3.12).
+    # Worker and server must stay protocol-compatible — bump both together.
+    "prefect==3.8.2",
+    "httpx>=0.27",
+]
+
+[tool.uv]
+# This repo is a set of flows, not an installable package.
+package = false
