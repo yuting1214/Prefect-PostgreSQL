@@ -1,4 +1,4 @@
-<img src="Prefect.png" alt="Prefect" width="92" align="right" />
+<img src="assets/prefect.png" alt="Prefect" width="92" align="right" />
 
 # Prefect + PostgreSQL on Railway
 
