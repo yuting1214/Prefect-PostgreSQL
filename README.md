@@ -9,7 +9,7 @@ Two templates, same stack, different halves of the job.
 
 | | **Prefect Server** | **Prefect + Worker** |
 |---|---|---|
-| | [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/z8tmK-?referralCode=jk_FgY&utm_medium=integration&utm_source=template&utm_campaign=generic) | *publishing soon* |
+| | [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/z8tmK-?referralCode=jk_FgY&utm_medium=integration&utm_source=template&utm_campaign=generic) | [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/prefect-worker?referralCode=jk_FgY&utm_medium=integration&utm_source=template&utm_campaign=generic) |
 | Services | server + Postgres | server + Postgres + **worker** |
 | Work pool | you create one | **created on boot** |
 | Runs your flows | ✗ you supply a worker | ✓ out of the box |
