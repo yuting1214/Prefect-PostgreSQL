@@ -5,12 +5,13 @@
 #   1. wait for the server  — on a cold start it is still running migrations, and a
 #      worker that starts too early produces a container that looks healthy and does
 #      nothing.
-#   2. register deployments — runs `prefect deploy --all` against flows/prefect.yaml
+#   2. ensure the work pool — `prefect deploy` will not register against a pool that
+#      does not exist, and the worker only creates one at start-up, i.e. too late.
+#   3. register deployments — runs `prefect deploy --all` against flows/prefect.yaml
 #      so a deployer only ever edits that folder. NON-FATAL: a broken prefect.yaml
 #      must not cost you the worker, because the pool still accepts work registered
 #      by other means.
-#   3. start the worker     — creates the pool if missing (--create-pool-if-not-found
-#      defaults to true) and is a no-op when it already exists, so redeploys are safe.
+#   4. start the worker     — a no-op if the pool already exists, so redeploys are safe.
 set -euo pipefail
 
 : "${PREFECT_API_URL:?PREFECT_API_URL is required (e.g. https://server.up.railway.app/api)}"
@@ -39,7 +40,20 @@ while True:
     time.sleep(3)
 PY
 
-# --- 2. register whatever the deployer declared -------------------------------
+# --- 2. ensure the pool exists ------------------------------------------------
+# `prefect worker start` would create it, but that happens in step 3 — and step 2's
+# `prefect deploy` refuses to register a deployment against a pool that does not
+# exist yet. So create it here. Idempotent: a redeploy finds it and moves on.
+if prefect work-pool inspect "$POOL" >/dev/null 2>&1; then
+  echo "worker: work pool '${POOL}' already exists"
+else
+  echo "worker: creating work pool '${POOL}'"
+  prefect --no-prompt work-pool create --type process "$POOL" >/dev/null 2>&1 \
+    || prefect work-pool inspect "$POOL" >/dev/null 2>&1 \
+    || echo "worker: WARNING could not create work pool '${POOL}'" >&2
+fi
+
+# --- 3. register whatever the deployer declared -------------------------------
 if [[ -f "$DEPLOY_FILE" ]]; then
   echo "worker: registering deployments from ${DEPLOY_FILE}"
   if prefect --no-prompt deploy --all --prefect-file "$DEPLOY_FILE" --pool "$POOL"; then
@@ -55,7 +69,7 @@ else
   echo "worker: no ${DEPLOY_FILE} found — skipping registration"
 fi
 
-# --- 3. run ------------------------------------------------------------------
+# --- 4. run ------------------------------------------------------------------
 echo "worker: starting against pool '${POOL}'"
 # --install-policy never: the default is 'prompt', which has no TTY in a container.
 # A process worker needs no extra packages.
